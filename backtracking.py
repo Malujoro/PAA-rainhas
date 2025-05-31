@@ -1,57 +1,73 @@
 import time
 
-x = 8
-tabuleiro = [[0] * x for _ in range(x)]
-
-#mostrar a solucao
+# Mostrar a solução
 def p_solucao(tabuleiro):
     for l in tabuleiro:
-        print(''.join('R ' if x else '- ' for x in l))
+        print(''.join('R ' if i else '- ' for i in l))
+    # print()
+    # time.sleep(0.2)
 
-#funcao para verificar posicao da rainha
-def safe(tabuleiro,l,c):
-    #coluna a esquerda
-    for i in range(c):
-        if tabuleiro[l][i] == 1:
+# Função para verificar posição da rainha
+def safe(tabuleiro, linha, coluna, n):
+    # Colunas da esquerda
+    for i in range(coluna):
+        if tabuleiro[linha][i] == 1:
             return False
-    #diagonal superior a esquerda
-    for i, j in zip(range(l,-1,-1), range(c,-1,-1)):
+
+    # Diagonal superior a esquerda
+    for i, j in zip(range(linha, -1, -1), range(coluna, -1, -1)):
         if tabuleiro[i][j] == 1:
             return False
-    #diagonal inferior a esquerda
-    for i, j in zip(range(l,x,1), range(c,-1,-1)):
+
+    # Diagonal inferior a esquerda
+    for i, j in zip(range(linha, n, 1), range(coluna, -1, -1)):
         if tabuleiro[i][j] == 1:
             return False
-        
+
     return True
 
-def recursao(tabuleiro,c):
-    #caso base
-    if c >= x:
+def recursao(tabuleiro, coluna, n):
+    # Caso base
+    if coluna >= n:
         return True
-    #tentativa de colocar a rainha em todas as linhas
-    for i in range(x):
-        if safe(tabuleiro,i,c):
-            tabuleiro[i][c]= 1
-            
-            if recursao(tabuleiro,c+1) == True:
+    
+    # Tentativa de colocar a rainha em todas as linhas
+    for i in range(n):
+        if safe(tabuleiro, i, coluna, n):
+            tabuleiro[i][coluna] = 1
+            # p_solucao(tabuleiro)
+
+            if recursao(tabuleiro, coluna + 1, n) == True:
+                # p_solucao(tabuleiro)
                 return True
-            
-            #se nao levar a uma solucao entao volta(backtracking)
-            tabuleiro[i][c] = 0
-            
-    #se nao foi colocada em nenhuma linha da coluna
+
+            # Se não levar a uma solução então volta (backtracking)
+            tabuleiro[i][coluna] = 0
+            # p_solucao(tabuleiro)
+
+    # Se não foi colocada em nenhuma linha da coluna
     return False
 
-def roda():
-    if not recursao(tabuleiro,0):
-        print('A solucao nao existe!\n')
-        return False
-    p_solucao(tabuleiro)
-    return True
-tempo_comeco = time.perf_counter()         
-roda()
-tempo_fim = time.perf_counter()
+def rodar_n_rainhas(n):
+    tabuleiro = [[0] * n for _ in range(n)]
 
-tempo = tempo_fim - tempo_comeco
-print(f'tempo de execucao: {tempo:.6f} segundos')
+    if not recursao(tabuleiro, 0, n):
+        return False, []
+
+    return True, tabuleiro
+
+
+if (__name__ == '__main__'):
+    n = 8
+
+    tempo_comeco = time.perf_counter()
+    existe, tabuleiro = rodar_n_rainhas(n)
+    tempo_fim = time.perf_counter()
+
+    if(not existe):
+        print('A solução não existe!\n')
+
+    tempo = tempo_fim - tempo_comeco
+
+    p_solucao(tabuleiro)
+    print(f'Tempo de execucao: {tempo:.6f} segundos')
