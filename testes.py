@@ -29,43 +29,68 @@ def linha(char: str = "=", tam: int = 70):
 
 with open("tempos_rainhas.csv", mode="w", newline="") as arquivoCSV:
     writer = csv.writer(arquivoCSV)
-    writer.writerow(["rainhas", "algoritmo", "iteracao",
-                    "tempo", "memoria_pico_b"])
+    writer.writerow(["rainhas", "algoritmo", "iteracao", "tempo", "memoria_pico_b",
+                    "total_conflitos", "rainhas_conflitos", "conflitos_linha", "conflitos_diagonais",])
 
     random.seed(2025)
     iteracoes = 30
-    lista_rainhas = [10, 25, 26, 100, 1000]
+    lista_rainhas = [10, 25, 26, 100, 250]
     limite_backtracking = lista_rainhas[2]
     desenho = Desenho(folder="imagens")
+
+    lista_rainhas = [250]
 
     for rainha in lista_rainhas:
         linha()
         for funcao in [backtracking, simple_greedy, random_greedy]:
+            # Evita aplicar backtracking em siutações elevadas
+            if (funcao == backtracking and rainha > limite_backtracking):
+                continue
+
             tabuleiro = funcao(rainha)
 
+            print(
+                f"{rainha} RAINHAS DE FORMA [{(funcao.__name__).upper()}]")
+
             # Ajusta o retorno para os gulosos
+            resultado = {}
             if (funcao != backtracking):
+                resultado = analisa_conflitos(tabuleiro, rainha)
+
+                print()
                 tabuleiro = converter_tabuleiro(rainha, tabuleiro)
 
             desenho.desenhar_tabuleiro(tabuleiro)
 
-            if (funcao != backtracking or (funcao == backtracking and rainha <= limite_backtracking)):
+            for it in range(iteracoes):
+                tracemalloc.start()
+                tracemalloc.reset_peak()
+                inicio = time.perf_counter()
+
+                funcao(rainha)
+
+                fim = time.perf_counter()
+                memoria_atual_b, memoria_pico_b = tracemalloc.get_traced_memory()
+                tracemalloc.stop()
+
+                tempo = fim - inicio
                 print(
-                    f"{rainha} RAINHAS DE FORMA [{(funcao.__name__).upper()}]")
-                for it in range(iteracoes):
-                    tracemalloc.start()
-                    tracemalloc.reset_peak()
-                    inicio = time.perf_counter()
+                    f"[{it + 1}ª Iteração] {tempo:.6f} segundos, com pico de {memoria_pico_b:.2f} bytes")
 
-                    funcao(rainha)
+                csv_tempo = f"{tempo:.6f}"
+                csv_memoria_pico = f"{memoria_pico_b:.2f}"
 
-                    fim = time.perf_counter()
-                    memoria_atual_b, memoria_pico_b = tracemalloc.get_traced_memory()
-                    tracemalloc.stop()
+                if (resultado):
+                    csv_total_conflitos = resultado['total_conflitos']
+                    csv_rainhas_conflitos = resultado['rainhas_com_conflitos']
+                    csv_conflitos_linha = resultado['conflitos_por_tipo']['linha']
+                    csv_conflitos_diagonais = resultado['conflitos_por_tipo']['diagonal']
+                else:
+                    csv_total_conflitos = 0
+                    csv_rainhas_conflitos = 0
+                    csv_conflitos_linha = 0
+                    csv_conflitos_diagonais = 0
 
-                    tempo = fim - inicio
-                    print(
-                        f"[{it + 1}ª Iteração] {tempo:.6f} segundos, com pico de {memoria_pico_b:.2f} bytes")
-                    writer.writerow(
-                        [rainha, funcao.__name__, it + 1, f"{tempo:.6f}", f"{memoria_pico_b:.2f}"])
-                linha(char="-", tam=60)
+                writer.writerow(
+                    [rainha, funcao.__name__, it + 1, csv_tempo, csv_memoria_pico, csv_total_conflitos, csv_rainhas_conflitos, csv_conflitos_linha, csv_conflitos_diagonais])
+            linha(char="-", tam=60)
