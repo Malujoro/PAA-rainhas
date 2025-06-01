@@ -35,13 +35,13 @@ def simple_greedy(N):
                 if quant < min_conflitos:
                     min_conflitos = quant
                     posicao = lin
-            else: 
+            else:
                 queens_lines[col] = lin
                 break
 
         if queens_lines[col] == -1:
             queens_lines[col] = posicao
-    
+
     return queens_lines
 
 def random_greedy(N):
@@ -65,13 +65,13 @@ def random_greedy(N):
 
             if quant < min_conflitos:
                 min_conflitos = quant
-                melhores_posicoes = [lin] 
+                melhores_posicoes = [lin]
 
-            elif quant == min_conflitos: 
+            elif quant == min_conflitos:
                 melhores_posicoes.append(lin)
 
         queens_lines[col] = random.choice(melhores_posicoes)
-    
+
     return queens_lines
 
 
@@ -109,11 +109,13 @@ def analisa_conflitos(queens_lines, N):
                     resultado['conflitos_por_tipo']['diagonal'] += 1
 
         if conflitos_dessa_rainha > 0:
-            resultado['rainhas_conflitos_infos'].append((lin, col, conflitos_dessa_rainha))
+            resultado['rainhas_conflitos_infos'].append(
+                (lin, col, conflitos_dessa_rainha))
             resultado['rainhas_com_conflitos'] += 1
 
-    resultado['total_conflitos'] = sum(resultado['conflitos_por_tipo'].values()) // 2
-    resultado['conflitos_por_tipo']['linha'] //= 2 
+    resultado['total_conflitos'] = sum(
+        resultado['conflitos_por_tipo'].values()) // 2
+    resultado['conflitos_por_tipo']['linha'] //= 2
     resultado['conflitos_por_tipo']['diagonal'] //= 2
 
     return resultado
@@ -124,11 +126,11 @@ def exibir_resultado(resultado):
     print(f"\n📊 RESULTADO DA ANÁLISE:")
     print(f"   • Total de conflitos: {resultado['total_conflitos']}")
     print(f"   • Rainhas com conflito: {resultado['rainhas_com_conflitos']}")
-    
+
     print(f"\n🔥 Conflitos por tipo:")
     print(f"   • Linha: {resultado['conflitos_por_tipo']['linha']}")
     print(f"   • Diagonal: {resultado['conflitos_por_tipo']['diagonal']}")
-    
+
     if resultado['rainhas_conflitos_infos']:
         print(f"\n⚔️  Rainhas em conflito:")
         for lin, col, qtd in resultado['rainhas_conflitos_infos']:
@@ -142,7 +144,7 @@ def board(queens_lines, N):
     print(f"\n👑 Tabuleiro {N}x{N}:")
     print("  " + " ".join([str(i) for i in range(N)]))
     print("  " + "─" * (N * 2 - 1))
-    
+
     for lin in range(N):
         linha = f"{lin}│"
         for col in range(N):
@@ -151,8 +153,18 @@ def board(queens_lines, N):
             else:
                 linha += "· "
         print(linha)
-    
+
     print(f"\n Posições: {queens_lines}")
+
+
+def converter_tabuleiro(N, queens_lines):
+    tabuleiro = [[0] * N for _ in range(N)]
+
+    for col in range(N):
+        lin = queens_lines[col]
+        tabuleiro[lin][col] = 1
+    
+    return tabuleiro
 
 
 def executar_greedy_algorithm(N, analisar, greedy):
@@ -171,16 +183,12 @@ def executar_greedy_algorithm(N, analisar, greedy):
     board(queens_lines, N)
     print()
 
-    tabuleiro = [[0] * N for _ in range(N)]
+    tabuleiro = converter_tabuleiro(N, queens_lines)
 
-    for col in range(N):
-        lin = queens_lines[col]
-        tabuleiro[lin][col] = 1
-    
     if analisar:
         resultado = analisa_conflitos(queens_lines, N)
         return tabuleiro, tempo, resultado
-    
+
     return tabuleiro, tempo
 
 
@@ -190,7 +198,7 @@ def testes():
     # Testes com solução gulosa simples:
     for i in range(len(N)):
         print("ALGORITMO GULOSO SIMPLES:")
-        print(f"🧪 TESTE {i+1}:")
+        print(f"🧪 TESTE {i + 1}:")
         tempo_inicio = time.perf_counter()
         queens_lines_simple = simple_greedy(N[i])
         tempo_fim = time.perf_counter()
@@ -200,16 +208,16 @@ def testes():
         board(queens_lines_simple, N[i])
         print()
         print(f"Tempo de execucao: {tempo:.6f} segundos")
-    
+
         resultado = analisa_conflitos(queens_lines_simple, N[i])
         exibir_resultado(resultado)
 
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
 
-    #Testes com solução gulosa randômica:
+    # Testes com solução gulosa randômica:
     for i in range(len(N)):
         print("ALGORITMO GULOSO RANDÔMICO:")
-        print(f"🧪 TESTE {i+1}:")
+        print(f"🧪 TESTE {i + 1}:")
         tempo_inicio = time.perf_counter()
         queens_lines_random = random_greedy(N[i])
         tempo_fim = time.perf_counter()
@@ -219,33 +227,33 @@ def testes():
         board(queens_lines_random, N[i])
         print()
         print(f"Tempo de execucao: {tempo:.6f} segundos")
-    
+
         resultado = analisa_conflitos(queens_lines_random, N[i])
         exibir_resultado(resultado)
 
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
 
 
 if __name__ == "__main__":
-    #Executar a função testes:
-    #testes()
+    # Executar a função testes:
+    # testes()
 
-    #Executar a função executar_greedy_algorithm:
     N = 4
-    #Com solução gulosa simples:
-    print("ALGORITMO GULOSO SIMPLES:")
-    analisa = True
-    tabuleiro, tempo, resultado = executar_greedy_algorithm(N, analisa, simple_greedy)
-    for lin in tabuleiro:
-        print(lin)
-    print(f"\nTempo de execucao: {tempo:.6f} segundos")
-    exibir_resultado(resultado)
+    from grafico import Desenho
 
-    #Com solução gulosa randômica:
-    print("ALGORITMO GULOSO RANDÔMICO:")
-    analisa = True
-    tabuleiro, tempo, resultado = executar_greedy_algorithm(N, analisa, random_greedy)
-    for lin in tabuleiro:
-        print(lin)
-    print(f"\nTempo de execucao: {tempo:.6f} segundos")
-    exibir_resultado(resultado)
+    desenho = Desenho(folder="greedy")
+    funcoes = {"simples": simple_greedy, "randômico": random_greedy}
+
+    for nome, func in funcoes.items():
+        print(f"ALGORITMO GULOSO {nome.upper()}")
+        analisa = True
+
+        # Executar a função executar_greedy_algorithm:
+        tabuleiro, tempo, resultado = executar_greedy_algorithm(
+            N, analisa, func)
+        
+        for lin in tabuleiro:
+            print(lin)
+        print(f"\nTempo de execucao: {tempo:.6f} segundos")
+        exibir_resultado(resultado)
+        desenho.desenhar_tabuleiro(tabuleiro, show=True)

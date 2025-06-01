@@ -51,28 +51,29 @@ def recursao(tabuleiro, coluna, n):
     # Se não foi colocada em nenhuma linha da coluna
     return False
 
-def rodar_n_rainhas(n):
+def backtracking(n):
     tabuleiro = [[0] * n for _ in range(n)]
 
     if not recursao(tabuleiro, 0, n):
-        return False, []
+        return []
 
-    return True, tabuleiro
+    return tabuleiro
 
 
 if (__name__ == '__main__'):
     from grafico import Desenho
     n = 8
 
-    desenho = Desenho()
+    desenho = Desenho(folder="backtracking")
     tempo_comeco = time.perf_counter()
-    existe, tabuleiro = rodar_n_rainhas(n)
+    tabuleiro = backtracking(n)
     tempo_fim = time.perf_counter()
 
-    if(not existe):
+    if(not tabuleiro):
         print('A solução não existe!\n')
 
     tempo = tempo_fim - tempo_comeco
 
     p_solucao(tabuleiro)
+    desenho.desenhar_tabuleiro(tabuleiro, show=True)
     print(f'Tempo de execucao: {tempo:.6f} segundos')

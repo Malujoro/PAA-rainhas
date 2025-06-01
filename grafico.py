@@ -26,7 +26,7 @@ class Desenho:
     def desenhar_tabuleiro(self, matriz, show=False):
         n = len(matriz)
 
-        if(show):
+        if (show):
             fig, ax = plt.subplots()
         else:
             fig, ax = plt.subplots(figsize=(4, 4), dpi=100)
@@ -49,8 +49,10 @@ class Desenho:
                 if (matriz[i][j]):
                     x, y = self.converte_coordenadas(n, i, j)
                     rainhas.append((j, i))
+                    fontsize = max(10, int(250 / n)) # Tamanho para salvar imagem
+                    # fontsize = max(10, int(360 / n)) # Tamanho para tela cheia
                     texto = ax.text(x, y, '♛', ha='center', va='center',
-                                    fontsize=36, color='crimson')
+                                    fontsize=fontsize, color='crimson')
                     texto.set_path_effects([
                         path_effects.Stroke(linewidth=2, foreground='black'),
                         path_effects.Normal(),
