@@ -4,8 +4,11 @@ import time
 def p_solucao(tabuleiro):
     for l in tabuleiro:
         print(''.join('R ' if i else '- ' for i in l))
+
     # print()
     # time.sleep(0.2)
+    
+    # desenho.desenhar_tabuleiro(tabuleiro)
 
 # Função para verificar posição da rainha
 def safe(tabuleiro, linha, coluna, n):
@@ -58,8 +61,10 @@ def rodar_n_rainhas(n):
 
 
 if (__name__ == '__main__'):
+    from grafico import Desenho
     n = 8
 
+    desenho = Desenho()
     tempo_comeco = time.perf_counter()
     existe, tabuleiro = rodar_n_rainhas(n)
     tempo_fim = time.perf_counter()
