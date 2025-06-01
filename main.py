@@ -14,6 +14,6 @@ if (__name__ == '__main__'):
 
     tempo = tempo_fim - tempo_comeco
 
-    Desenho().desenhar_tabuleiro(tabuleiro)
+    Desenho().desenhar_tabuleiro(tabuleiro, show=True)
     
     print(f'Tempo de execucao: {tempo:.6f} segundos')

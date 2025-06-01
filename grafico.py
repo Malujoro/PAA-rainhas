@@ -26,8 +26,12 @@ class Desenho:
     def desenhar_tabuleiro(self, matriz, show=False):
         n = len(matriz)
 
-        fig, ax = plt.subplots(figsize=(4, 4), dpi=100)
-        ax.set_position([0, 0, 1, 1])
+        if(show):
+            fig, ax = plt.subplots()
+        else:
+            fig, ax = plt.subplots(figsize=(4, 4), dpi=100)
+            ax.set_position([0, 0, 1, 1])
+
         tabuleiro = np.zeros((n, n))
 
         for i in range(n):
@@ -54,7 +58,7 @@ class Desenho:
 
         linhas_ataque = []
 
-        def desenhar_ataques(self, col, lin):
+        def desenhar_ataques(col, lin):
             # Remover linhas existentes
             self.remover_linhas(linhas_ataque)
 
